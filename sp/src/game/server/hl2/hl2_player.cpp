@@ -1123,8 +1123,8 @@ void CHL2_Player::PreThink(void)
 	// Update weapon's ready status
 	UpdateWeaponPosture();
 
-	// Disallow shooting while zooming
-	if ( IsX360() )
+	// ElmeriThePig: Uncomment this part if you want to disallow shooting while zooming.
+	/*if ( IsX360() )
 	{
 		if ( IsZooming() )
 		{
@@ -1147,7 +1147,7 @@ void CHL2_Player::PreThink(void)
 	#endif
 			m_nButtons &= ~(IN_ATTACK|IN_ATTACK2);
 		}
-	}
+	}*/
 }
 
 void CHL2_Player::PostThink( void )

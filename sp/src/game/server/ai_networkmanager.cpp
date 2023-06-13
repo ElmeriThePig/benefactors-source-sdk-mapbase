@@ -1154,7 +1154,8 @@ void CAI_NetworkManager::DelayedInit( void )
 			g_pAINetworkManager->SetNextThink( gpGlobals->curtime + 0.5 );
 			m_bNeedGraphRebuild = true;
 #else
-			UTIL_CenterPrintAll( "Node Graph out of Date. Rebuilding...\n" );
+			if (developer.GetBool())
+				UTIL_CenterPrintAll( "Node Graph out of Date. Rebuilding...\n" );
 			m_bNeedGraphRebuild = true;
 			g_pAINetworkManager->SetNextThink( gpGlobals->curtime + 1 );
 #endif

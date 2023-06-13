@@ -82,6 +82,11 @@
 // Projective textures
 #include "C_Env_Projected_Texture.h"
 
+// Shader Editor (Only Episodic!)
+#ifdef HL2_EPISODIC
+#include "ShaderEditor/ShaderEditorSystem.h"
+#endif // HL2_EPISODIC
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1497,6 +1502,15 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 
 	DrawWorldAndEntities( drawSkybox, view, nClearFlags, pCustomVisibility );
 
+#ifdef HL2_EPISODIC
+	VisibleFogVolumeInfo_t fogVolumeInfo;
+	render->GetVisibleFogVolume(view.origin, &fogVolumeInfo);
+	WaterRenderInfo_t info;
+	DetermineWaterRenderInfo(fogVolumeInfo, info);
+	g_ShaderEditorSystem->CustomViewRender(&g_CurrentViewID, fogVolumeInfo, info);
+#endif // HL2_EPISODIC
+
+
 	// Disable fog for the rest of the stuff
 	DisableFog();
 
@@ -2053,6 +2067,10 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 
 	m_CurrentView = view;
 
+	// Seamless Cubemaps.
+	if (building_cubemaps.GetBool())
+		m_CurrentView.fov = RAD2DEG(2.0f * atanf(64.0f / (64 - 0.5)));
+
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
@@ -2148,6 +2166,9 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		if ( ( bDrew3dSkybox = pSkyView->Setup( view, &nClearFlags, &nSkyboxVisible ) ) != false )
 		{
 			AddViewToScene( pSkyView );
+#ifdef HL2_EPISODIC
+			g_ShaderEditorSystem->UpdateSkymask(false, view.x, view.y, view.width, view.height);
+#endif // HL2_EPISODIC
 		}
 		SafeRelease( pSkyView );
 #endif
@@ -2242,6 +2263,11 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 #endif
 		DrawViewModels( view, whatToDraw & RENDERVIEW_DRAWVIEWMODEL );
 
+#ifdef HL2_EPISODIC
+		g_ShaderEditorSystem->UpdateSkymask(bDrew3dSkybox, view.x, view.y, view.width, view.height);
+#endif // HL2_EPISODIC
+
+
 		DrawUnderwaterOverlay();
 
 		PixelVisibility_EndScene();
@@ -2278,6 +2304,11 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 			}
 			pRenderContext.SafeRelease();
 		}
+
+#ifdef HL2_EPISODIC
+		g_ShaderEditorSystem->CustomPostRender();
+#endif // HL2_EPISODIC
+
 
 		// And here are the screen-space effects
 

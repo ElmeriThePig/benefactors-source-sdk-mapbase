@@ -581,7 +581,7 @@ void CWeaponShotgun::PrimaryAttack( void )
 	// Fire the bullets, and force the first shot to be perfectly accuracy
 	pPlayer->FireBullets( sk_plr_num_shotgun_pellets.GetInt(), vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, 0, NULL, true, true );
 	
-	pPlayer->ViewPunch( QAngle( random->RandomFloat( -2, -1 ), random->RandomFloat( -2, 2 ), 0 ) );
+	pPlayer->ViewPunch( QAngle( random->RandomFloat( -7, -7 ), random->RandomFloat( -6, 6 ), 0 ) );	// OG: (-2, -1) (-2, 2)
 
 	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_SHOTGUN, 0.2, GetOwner() );
 
